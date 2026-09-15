@@ -1,8 +1,8 @@
 ## 1. Dependency And Storage Configuration
 
-- [ ] 1.1 Confirm the Django Vditor package/API supports Django 6.1 and Markdown output; add the dependency or implement the smallest local widget integration and document the choice.
-- [ ] 1.2 Add environment-aware `MEDIA_ROOT`, `MEDIA_URL`, and storage settings, development media serving, upload limits, and support only JPEG/JPG and WebP MIME types.
-- [ ] 1.3 Add the independent `attachments` app and its `Attachment` model with a server-controlled upload path, ownership metadata, JSON metadata, indexes/constraints, and migrations; add database-free model/validation tests in `project/tests/unit_test/attachments/` where possible.
+- [x] 1.1 Confirm the Django Vditor package/API supports Django 6.1 and Markdown output; add the dependency or implement the smallest local widget integration and document the choice.
+- [x] 1.2 Add environment-aware `MEDIA_ROOT`, `MEDIA_URL`, and storage settings, development media serving, upload limits, and support only JPEG/JPG and WebP MIME types.
+- [x] 1.3 Add the independent `attachments` app and its `Attachment` model with a server-controlled upload path, ownership metadata, JSON metadata, indexes/constraints, and migrations; add database-free model/validation tests in `project/tests/unit_test/attachments/` where possible.
 
 ## 2. Attachment Upload And Authorization
 
