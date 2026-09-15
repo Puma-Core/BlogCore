@@ -46,4 +46,4 @@ if settings.ENVIRONMENT != 'production':
                 serve,
                 {"document_root": settings.MEDIA_ROOT},
             )
-        ]
+        ] # type: ignore
