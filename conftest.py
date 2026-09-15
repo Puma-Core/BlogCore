@@ -10,4 +10,5 @@ pytest_plugins = [
     "tests.unit_test.fixtures.profile",
     "tests.unit_test.fixtures.onboarding",
     "tests.unit_test.fixtures.client",
+    "tests.unit_test.fixtures.attachments",
 ]
