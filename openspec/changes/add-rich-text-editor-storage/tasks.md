@@ -6,9 +6,9 @@
 
 ## 2. Attachment Upload And Authorization
 
-- [ ] 2.1 Implement the authenticated Vditor-compatible image upload endpoint with JPEG/JPG and WebP MIME/size validation, optional JSON metadata preservation, storage cleanup on validation failure, and stable attachment URL/identifier responses.
-- [ ] 2.2 Implement attachment management authorization so only the owning author can manage or delete files, without using metadata relationship references for authorization.
-- [ ] 2.3 Add route and endpoint tests in `project/tests/unit_test/attachments/` for anonymous access, valid JPEG/JPG and WebP uploads, invalid MIME types, oversized files, filename collisions, cross-author access, metadata references, and generated URLs.
+- [x] 2.1 Implement the authenticated Vditor-compatible image upload endpoint with JPEG/JPG and WebP MIME/size validation, optional JSON metadata preservation, storage cleanup on validation failure, and stable attachment URL/identifier responses.
+- [x] 2.2 Implement attachment management authorization so only the owning author can manage or delete files, without using metadata relationship references for authorization.
+- [x] 2.3 Add route and endpoint tests in `project/tests/unit_test/attachments/` for anonymous access, valid JPEG/JPG and WebP uploads, invalid MIME types, oversized files, filename collisions, cross-author access, metadata references, and generated URLs.
 
 ## 3. Markdown Editor Integration
 

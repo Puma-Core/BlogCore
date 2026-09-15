@@ -1,10 +1,19 @@
 from django.conf import settings
-from rest_framework.routers import DefaultRouter
-
+from django.urls import include, path
 from posts.views import PublicProfilePostViewSet
 from profiles.views import PublicProfileViewSet
+from rest_framework.routers import DefaultRouter
 
-router = DefaultRouter(use_regex_path=False)
+
+class AppRouter(DefaultRouter):
+    def get_urls(self):
+        return [
+            *super().get_urls(),
+            path("attachments/", include("attachments.urls")),
+        ]
+
+
+router = AppRouter(use_regex_path=False)
 router.include_root_view = False
 router.include_format_suffixes = settings.ENVIRONMENT == 'development'
 
