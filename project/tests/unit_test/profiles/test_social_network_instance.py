@@ -227,6 +227,16 @@ def test_instance_delete_reports_the_archived_persisted_instance() -> None:
     assert exc_info.value.protected_objects == {parent}
 
 
+def test_instance_delete_protects_a_persisted_archived_instance() -> None:
+    parent = _build_parent()
+    parent.archived = True
+
+    with pytest.raises(django_models.ProtectedError) as exc_info:
+        parent.delete()
+
+    assert exc_info.value.protected_objects == {parent}
+
+
 def test_instance_delete_calls_super_when_not_archived(mocker) -> None:
     mock_super_delete = mocker.patch.object(django_models.Model, "delete")
     parent = _build_parent(pk=None)

@@ -25,3 +25,6 @@ project/staticfiles/
 
 # Enviroment variables
 .env
+
+# Media
+media/

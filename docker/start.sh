@@ -2,6 +2,10 @@
 
 set -eu
 
+if [ "$#" -gt 0 ]; then
+    exec "$@"
+fi
+
 uv sync --frozen
 uv run python project/manage.py migrate
 uv run python project/manage.py collectstatic --noinput

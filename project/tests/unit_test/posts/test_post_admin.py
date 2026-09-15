@@ -2,6 +2,7 @@ import pytest
 from django.contrib import admin
 
 from posts.admin import PostAdmin
+from posts.forms import PostForm
 from posts.models import Post
 from profiles.models import PublicProfile
 
@@ -22,6 +23,10 @@ def test_admin_lists_public_profile_author(post_admin) -> None:
 
 def test_admin_selects_author_for_changelist(post_admin) -> None:
     assert post_admin.list_select_related == ("author",)
+
+
+def test_admin_uses_the_vditor_post_form(post_admin) -> None:
+    assert post_admin.form is PostForm
 
 
 def test_admin_form_uses_public_profiles_for_authors(post_admin) -> None:
