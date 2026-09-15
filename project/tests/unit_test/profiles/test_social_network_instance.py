@@ -3,14 +3,13 @@ from unittest.mock import MagicMock
 import pytest
 from django.core.exceptions import ValidationError
 from django.db import models as django_models
-
-from profiles.models import SocialNetworkConfig, SocialNetworkInstance
-
 from tests.unit_test.functions._social_network import (
     _build_config,
     _build_parent,
 )
 from tests.unit_test.functions._variable import _variable
+
+from profiles.models import SocialNetworkConfig, SocialNetworkInstance
 
 
 def test_str_returns_config_name_and_author() -> None:
@@ -208,12 +207,24 @@ def test_instance_archive_marks_as_archived_and_persists_only_that_field(
     mock_super_save.assert_called_once_with(update_fields=["archived"])
 
 
-def test_instance_delete_raises_protected_error_when_archived() -> None:
+def test_instance_delete_raises_protected_error_with_no_objects_when_unsaved() -> None:
     parent = _build_parent(pk=None)
     parent.archived = True
 
-    with pytest.raises(django_models.ProtectedError):
+    with pytest.raises(django_models.ProtectedError) as exc_info:
         parent.delete()
+
+    assert exc_info.value.protected_objects == set()
+
+
+def test_instance_delete_reports_the_archived_persisted_instance() -> None:
+    parent = _build_parent(pk=1)
+    parent.archived = True
+
+    with pytest.raises(django_models.ProtectedError) as exc_info:
+        parent.delete()
+
+    assert exc_info.value.protected_objects == {parent}
 
 
 def test_instance_delete_calls_super_when_not_archived(mocker) -> None:
