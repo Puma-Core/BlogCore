@@ -7,9 +7,9 @@ Post content is currently edited and stored as an unstructured text field. This 
 - Integrate a Django Vditor-based editor into the post authoring surface.
 - Store the editor output as Markdown in the post content field, preserving Markdown as the canonical representation.
 - Add authenticated attachment upload handling backed by Django's storage abstraction.
-- Persist metadata for uploaded files and associate each file with its author and, when known, its post.
+- Persist metadata for uploaded files and associate each file with its author.
 - Return a stable file reference/URL from uploads so Vditor can insert the selected image into Markdown.
-- Validate image type, size, and ownership, and prevent unreferenced or unauthorized files from being exposed through the authoring workflow.
+- Validate JPEG/JPG and WebP image types, size, and ownership, and prevent unauthorized files from being managed through the authoring workflow.
 - Add configuration for media storage and tests covering editor integration, Markdown persistence, upload authorization, and file references.
 
 ## Capabilities
@@ -25,7 +25,7 @@ Post content is currently edited and stored as an unstructured text field. This 
 
 ## Impact
 
-- Affected code: `project/posts`, Django settings and URLs, dependency configuration, media storage configuration, migrations, and post tests.
-- Affected behavior: post administration/authoring, attachment upload flow, and the representation of post content returned by existing APIs.
+- Affected code: a new `project/attachments` app, `project/posts` editor integration, Django settings and URLs, dependency configuration, media storage configuration, migrations, and tests.
+- Affected behavior: post administration/authoring, independent attachment upload flow, and the representation of post content returned by existing APIs.
 - Dependencies: a Django Vditor integration and its frontend assets; the implementation must confirm the selected package supports Django 6.1 and Markdown output before adoption.
 - Operational requirement: deployments must provide a durable `MEDIA_ROOT`/`MEDIA_URL` or a configured Django storage backend; local filesystem storage is sufficient for development.
