@@ -12,12 +12,12 @@
 
 ## 3. Markdown Editor Integration
 
-- [ ] 3.1 Add the post `ModelForm`/admin widget integration, initialize Vditor with stored Markdown and the upload endpoint, and preserve existing post validation and author permissions.
-- [ ] 3.2 Add form/admin tests in `project/tests/unit_test/posts/` proving existing Markdown loads unchanged, formatted content is persisted as Markdown, and upload references can be saved in `Post.content`.
-- [ ] 3.3 Verify existing serializers and public post endpoints continue returning canonical Markdown without changing identifiers or response contracts.
+- [x] 3.1 Add the post `ModelForm`/admin widget integration, initialize Vditor with stored Markdown and the upload endpoint, and preserve existing post validation and author permissions.
+- [x] 3.2 Add form/admin tests in `project/tests/unit_test/posts/` proving existing Markdown loads unchanged, formatted content is persisted as Markdown, and upload references can be saved in `Post.content`.
+- [x] 3.3 Verify existing serializers and public post endpoints continue returning canonical Markdown without changing identifiers or response contracts.
 
 ## 4. Verification And Operations
 
-- [ ] 4.1 Run `uv run python project/manage.py makemigrations` and `uv run python project/manage.py check`; inspect generated migrations and media configuration.
-- [ ] 4.2 Run the relevant posts tests and then `uv run pytest` for the full suite.
-- [ ] 4.3 Document production media storage, delivery, size/type limits, and the behavior of unreferenced draft attachments.
+- [x] 4.1 Run `uv run python project/manage.py makemigrations` and `uv run python project/manage.py check`; inspect generated migrations and media configuration.
+- [x] 4.2 Run the relevant posts tests and then `uv run pytest` for the full suite.
+- [x] 4.3 Document production media storage, delivery, size/type limits, and the behavior of unreferenced draft attachments.

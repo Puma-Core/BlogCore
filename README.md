@@ -108,6 +108,33 @@ Las opciones principales viven en `project/app/settings.py`:
 | `ALLOWED_HOSTS` | `[]`                   | Hosts permitidos. Añadir los dominios de despliegue en producción. |
 | `DATABASES`     | SQLite (`db.sqlite3`)  | Base de datos por defecto.                                         |
 
+## Media de posts
+
+El editor de posts guarda Markdown en `Post.content` y puede subir imágenes a
+`/api/attachments/upload/` para insertarlas como URLs en ese Markdown. El endpoint
+requiere una sesión autenticada, acepta únicamente `image/jpeg` (`.jpg` y `.jpeg`)
+e `image/webp`, y limita cada archivo a 5 MiB de forma predeterminada.
+
+En desarrollo, los archivos se guardan localmente bajo `project/media/` y se sirven
+desde `/media/`. Los siguientes ajustes admiten variables de entorno:
+
+| Variable | Valor por defecto | Descripción |
+| --- | --- | --- |
+| `MEDIA_URL` | `/media/` | URL pública usada al generar referencias de adjuntos. |
+| `MEDIA_ROOT` | `project/media/` | Directorio local para el backend de desarrollo. |
+| `MEDIA_STORAGE_BACKEND` | `django.core.files.storage.FileSystemStorage` | Backend de Django que persiste los adjuntos. |
+| `POST_ATTACHMENT_MAX_SIZE` | `5242880` | Tamaño máximo de carga en bytes. |
+
+En producción, configure un backend de almacenamiento durable mediante
+`MEDIA_STORAGE_BACKEND`, su configuración propia y un `MEDIA_URL` servido por el
+proveedor o CDN. La aplicación usa la abstracción `Storage` de Django y no debe
+depender del directorio local del contenedor para conservar archivos.
+
+Los adjuntos pertenecen a quien los sube y no tienen una relación de base de datos
+con un post. Una imagen puede quedar sin referencia si se abandona un borrador; se
+conserva como adjunto del autor y su limpieza es una política operativa futura, no
+un proceso automático.
+
 ## Scripts útiles
 
 ```bash
