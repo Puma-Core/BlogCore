@@ -24,4 +24,4 @@ jobs:
         with:
           python-version: "3.14"
       - run: uv sync --frozen --all-groups
-      - run: uv run pytest
+      - run: uv run pytest --cov
