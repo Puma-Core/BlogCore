@@ -28,6 +28,10 @@ def get_env_value(name: str, default: str) -> str:
 def get_env_bool(name: str, default: bool) -> bool:
     return get_env_value(name, str(default)).lower() in ("true", "1", "t")
 
+
+def get_env_int(name: str, default: int) -> int:
+    return int(get_env_value(name, str(default)))
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -60,6 +64,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_spectacular',
     'posts',
+    'attachments',
     'profiles',
     'clients',
 ]
@@ -178,8 +183,16 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+MEDIA_URL = get_env_value("MEDIA_URL", "/media/")
+MEDIA_ROOT = Path(get_env_value("MEDIA_ROOT", str(BASE_DIR / "media")))
+MEDIA_STORAGE_BACKEND = get_env_value(
+    "MEDIA_STORAGE_BACKEND", "django.core.files.storage.FileSystemStorage"
+)
+POST_ATTACHMENT_MAX_SIZE = get_env_int("POST_ATTACHMENT_MAX_SIZE", 5 * 1024 * 1024)
+POST_ATTACHMENT_ALLOWED_MIME_TYPES = ("image/jpeg", "image/webp")
 
 STORAGES = {
+    "default": {"BACKEND": MEDIA_STORAGE_BACKEND},
     'staticfiles': {
         'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     },
