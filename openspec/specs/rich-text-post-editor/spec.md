@@ -1,4 +1,8 @@
-## ADDED Requirements
+## Purpose
+
+Lets authors compose posts in a Markdown-rich editor while retaining portable source content.
+
+## Requirements
 
 ### Requirement: Post authoring uses a Markdown rich text editor
 The post authoring form MUST render a Vditor-based editor for `Post.content`, configured to produce Markdown rather than HTML as its submitted value.

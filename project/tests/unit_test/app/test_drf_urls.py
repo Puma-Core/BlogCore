@@ -42,6 +42,17 @@ def test_openapi_schema_resolves_in_development():
         assert resolved.url_name == 'schema'
 
 
+def test_local_attachment_media_resolves_without_debug_mode():
+    with override_settings(DEBUG=False):
+        with api_environment('development'):
+            resolved = resolve('/media/attachments/photo.webp')
+
+    assert resolved.kwargs == {
+        'path': 'attachments/photo.webp',
+        'document_root': settings.MEDIA_ROOT,
+    }
+
+
 @pytest.mark.parametrize(
     "path",
     [
@@ -69,3 +80,5 @@ def test_public_api_route_resolves_in_production():
             resolve('/api/schema/')
         with pytest.raises(Resolver404):
             resolve('/api/authors/test-user.json')
+        with pytest.raises(Resolver404):
+            resolve('/media/attachments/photo.webp')

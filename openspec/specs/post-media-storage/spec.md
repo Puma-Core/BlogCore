@@ -1,4 +1,8 @@
-## ADDED Requirements
+## Purpose
+
+Lets authors securely upload supported post images while preserving portable Markdown references.
+
+## Requirements
 
 ### Requirement: Authenticated authors can upload supported images
 The system MUST expose an authenticated upload operation for post-editor image attachments and MUST accept only `image/jpeg` (for `.jpg` and `.jpeg`) and `image/webp` below a configurable maximum size.

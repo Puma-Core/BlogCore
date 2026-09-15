@@ -1,4 +1,5 @@
 from django.forms import Textarea
+from django.urls import reverse
 
 
 class VditorWidget(Textarea):
@@ -11,5 +12,7 @@ class VditorWidget(Textarea):
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
-        context["widget"]["attrs"]["data-vditor"] = "true"
+        widget_attrs = context["widget"]["attrs"]
+        widget_attrs["data-vditor"] = "true"
+        widget_attrs["data-vditor-upload-url"] = reverse("attachment-upload")
         return context
