@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 import os
 from pathlib import Path
 
+from app.storage import validate_s3_media_storage
+
 
 def get_env_list(name: str, default: tuple[str, ...]) -> list[str]:
     value = os.getenv(name)
@@ -23,6 +25,10 @@ def get_env_list(name: str, default: tuple[str, ...]) -> list[str]:
 
 def get_env_value(name: str, default: str) -> str:
     return os.getenv(name, default)
+
+
+def get_optional_env_value(name: str) -> str | None:
+    return os.getenv(name) or None
 
 
 def get_env_bool(name: str, default: bool) -> bool:
@@ -188,13 +194,41 @@ MEDIA_ROOT = Path(get_env_value("MEDIA_ROOT", str(BASE_DIR / "media")))
 MEDIA_STORAGE_BACKEND = get_env_value(
     "MEDIA_STORAGE_BACKEND", "django.core.files.storage.FileSystemStorage"
 )
+
+AWS_ACCESS_KEY_ID = get_optional_env_value("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = get_optional_env_value("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = get_optional_env_value("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_ENDPOINT_URL = get_optional_env_value("AWS_S3_ENDPOINT_URL")
+AWS_S3_REGION_NAME = get_optional_env_value("AWS_S3_REGION_NAME")
+AWS_S3_ADDRESSING_STYLE = get_optional_env_value("AWS_S3_ADDRESSING_STYLE")
+validate_s3_media_storage(MEDIA_STORAGE_BACKEND, AWS_STORAGE_BUCKET_NAME)
+
 POST_ATTACHMENT_MAX_SIZE = get_env_int("POST_ATTACHMENT_MAX_SIZE", 5 * 1024 * 1024)
 POST_ATTACHMENT_ALLOWED_MIME_TYPES = ("image/jpeg", "image/webp")
 
 STORAGES = {
-    "default": {"BACKEND": MEDIA_STORAGE_BACKEND},
+    "default": {
+        "BACKEND": MEDIA_STORAGE_BACKEND,
+    },
     'staticfiles': {
         'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "attachments": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
     },
 }
 
