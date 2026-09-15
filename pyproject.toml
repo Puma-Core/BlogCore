@@ -40,3 +40,6 @@ omit = [
     "project/tests/*",
     "**/migrations/**"
 ]
+
+[tool.coverage.report]
+fail_under=99

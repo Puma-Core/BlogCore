@@ -7,7 +7,7 @@ on:
       - develop
 
 jobs:
-  ty:
+  type-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,3 +16,12 @@ jobs:
           python-version: "3.14"
       - run: uv sync --frozen --all-groups
       - run: uv run ty check
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.14"
+      - run: uv sync --frozen --all-groups
+      - run: uv run pytest --cov
