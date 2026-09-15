@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.conf import settings
 from django.shortcuts import get_object_or_404
@@ -17,6 +18,9 @@ from attachments.errors import (
     UnsupportedAttachmentMediaTypeError,
 )
 from attachments.models import Attachment
+
+
+logger = logging.getLogger(__name__)
 
 
 @extend_schema(exclude=settings.ENVIRONMENT == 'production')
@@ -44,13 +48,34 @@ class AttachmentUploadView(APIView):
         )
         attachment.full_clean()
         try:
-            attachment.save()
-            url = request.build_absolute_uri(attachment.file.url)
+            attachment.file.save(uploaded_file.name, uploaded_file, save=False)
         except Exception:
-            # A failed save must not leave an inaccessible file in storage.
-            if attachment.file.name:
-                attachment.file.storage.delete(attachment.file.name)
+            logger.exception(
+                "Attachment file upload failed",
+                extra={
+                    "storage_backend": settings.STORAGES["default"]["BACKEND"],
+                    "attachment_name": attachment.file.name,
+                },
+            )
             raise
+
+        try:
+            attachment.save()
+        except Exception:
+            logger.exception(
+                "Attachment record creation failed",
+                extra={"attachment_name": attachment.file.name},
+            )
+            try:
+                attachment.file.delete(save=False)
+            except Exception:
+                logger.exception(
+                    "Attachment storage cleanup failed",
+                    extra={"attachment_name": attachment.file.name},
+                )
+            raise
+
+        url = request.build_absolute_uri(attachment.file.url)
 
         return Response(
             {

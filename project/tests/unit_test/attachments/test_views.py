@@ -9,6 +9,9 @@ from attachments.models import Attachment
 from attachments.views import AttachmentDetailView, AttachmentUploadView
 
 
+pytestmark = pytest.mark.usefixtures("local_attachment_storage")
+
+
 def image_file(name="image.jpg", content_type="image/jpeg", content=b"image"):
     return SimpleUploadedFile(name, content, content_type=content_type)
 
@@ -133,17 +136,70 @@ def test_upload_rejects_metadata_that_is_not_an_object(api_client, persisted_use
 
 @pytest.mark.django_db
 def test_upload_deletes_the_file_when_persistence_fails(
-    api_client, persisted_user, mocker
+    api_client, persisted_user, mocker, tmp_path
 ) -> None:
     api_client.force_authenticate(persisted_user)
     mock_save = mocker.patch.object(Attachment, "save", side_effect=RuntimeError)
-    mock_delete = mocker.patch("django.core.files.storage.FileSystemStorage.delete")
+    mock_log = mocker.patch("attachments.views.logger.exception")
 
-    with pytest.raises(RuntimeError):
+    with override_settings(MEDIA_ROOT=tmp_path), pytest.raises(RuntimeError):
         api_client.post(reverse("attachment-upload"), {"file": image_file()})
 
     mock_save.assert_called_once()
-    mock_delete.assert_called_once_with("image.jpg")
+    mock_log.assert_called_once_with(
+        "Attachment record creation failed",
+        extra=mocker.ANY,
+    )
+    assert not [path for path in tmp_path.rglob("*") if path.is_file()]
+
+
+@pytest.mark.django_db
+def test_upload_preserves_the_record_error_when_cleanup_fails(
+    api_client, persisted_user, mocker
+) -> None:
+    api_client.force_authenticate(persisted_user)
+    mocker.patch.object(Attachment, "save", side_effect=RuntimeError("record failed"))
+    mocker.patch(
+        "django.db.models.fields.files.FieldFile.delete",
+        side_effect=RuntimeError("cleanup failed"),
+    )
+    mock_log = mocker.patch("attachments.views.logger.exception")
+
+    with pytest.raises(RuntimeError, match="record failed"):
+        api_client.post(reverse("attachment-upload"), {"file": image_file()})
+
+    assert mock_log.call_args_list == [
+        mocker.call("Attachment record creation failed", extra=mocker.ANY),
+        mocker.call("Attachment storage cleanup failed", extra=mocker.ANY),
+    ]
+
+
+@pytest.mark.django_db
+def test_upload_does_not_try_to_delete_when_storage_upload_fails(
+    api_client, persisted_user, mocker
+) -> None:
+    api_client.force_authenticate(persisted_user)
+    mock_save = mocker.patch.object(Attachment, "save")
+    mock_upload = mocker.patch(
+        "django.db.models.fields.files.FieldFile.save",
+        side_effect=RuntimeError("storage failed"),
+    )
+    mock_delete = mocker.patch("django.db.models.fields.files.FieldFile.delete")
+    mock_log = mocker.patch("attachments.views.logger.exception")
+
+    with pytest.raises(RuntimeError, match="storage failed"):
+        api_client.post(reverse("attachment-upload"), {"file": image_file()})
+
+    mock_upload.assert_called_once()
+    mock_save.assert_not_called()
+    mock_delete.assert_not_called()
+    mock_log.assert_called_once_with(
+        "Attachment file upload failed",
+        extra={
+            "storage_backend": "django.core.files.storage.FileSystemStorage",
+            "attachment_name": "image.jpg",
+        },
+    )
 
 
 @pytest.mark.django_db

@@ -1,4 +1,4 @@
-from app.settings import get_env_bool, get_env_list, get_env_value
+from app.settings import get_env_bool, get_env_list, get_env_value, get_optional_env_value
 from django.conf import settings
 
 
@@ -45,3 +45,9 @@ def test_runtime_values_use_environment_over_defaults(monkeypatch):
     assert not get_env_bool("DEBUG", True)
     assert get_env_value("ENVIRONMENT", "development") == "container"
     assert get_env_value("API_BASE_URL", "http://localhost:8000") == "https://api.example.test"
+
+
+def test_optional_runtime_value_treats_an_empty_environment_variable_as_unset(monkeypatch):
+    monkeypatch.setenv("AWS_S3_ADDRESSING_STYLE", "")
+
+    assert get_optional_env_value("AWS_S3_ADDRESSING_STYLE") is None

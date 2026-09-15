@@ -125,10 +125,27 @@ desde `/media/`. Los siguientes ajustes admiten variables de entorno:
 | `MEDIA_STORAGE_BACKEND` | `django.core.files.storage.FileSystemStorage` | Backend de Django que persiste los adjuntos. |
 | `POST_ATTACHMENT_MAX_SIZE` | `5242880` | Tamaño máximo de carga en bytes. |
 
-En producción, configure un backend de almacenamiento durable mediante
-`MEDIA_STORAGE_BACKEND`, su configuración propia y un `MEDIA_URL` servido por el
-proveedor o CDN. La aplicación usa la abstracción `Storage` de Django y no debe
-depender del directorio local del contenedor para conservar archivos.
+Para un servicio compatible con S3, configure
+`MEDIA_STORAGE_BACKEND=storages.backends.s3boto3.S3Boto3Storage` y las siguientes variables
+estándar de `django-storages`.
+Las credenciales explícitas son opcionales: si se omiten, `boto3` usa su cadena de
+credenciales ambiental (por ejemplo, un rol de instancia o variables estándar de AWS).
+
+| Variable | Valor por defecto | Descripción |
+| --- | --- | --- |
+| `AWS_STORAGE_BUCKET_NAME` | sin valor | Bucket obligatorio para el backend S3. |
+| `AWS_ACCESS_KEY_ID` | sin valor | Credencial de acceso opcional; use un gestor de secretos. |
+| `AWS_SECRET_ACCESS_KEY` | sin valor | Credencial secreta opcional; nunca la incluya en el repositorio. |
+| `AWS_S3_REGION_NAME` | sin valor | Región que usa el cliente S3. |
+| `AWS_S3_ENDPOINT_URL` | sin valor | Endpoint para un proveedor compatible con S3. |
+| `AWS_S3_ADDRESSING_STYLE` | sin valor | Use `path` para forzar el formato de endpoint compatible de R2. |
+
+Los demás ajustes de S3 usan los valores predeterminados de `django-storages`.
+
+El bucket se valida al iniciar la aplicación cuando se selecciona el backend S3;
+una configuración incompleta no cambia silenciosamente al directorio local. La
+aplicación usa la abstracción `Storage` de Django, por lo que `Attachment.file` y
+otros `FileField` conservan la misma interfaz local o remota.
 
 Los adjuntos pertenecen a quien los sube y no tienen una relación de base de datos
 con un post. Una imagen puede quedar sin referencia si se abandona un borrador; se
