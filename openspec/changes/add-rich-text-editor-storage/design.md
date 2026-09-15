@@ -39,7 +39,7 @@ Expose a POST endpoint for image uploads using the project's existing authentica
 
 ### Integrate at the post form boundary
 
-Use a `ModelForm`/admin widget integration so the editor is present wherever the post authoring form is used. The widget initializes Vditor with Markdown mode and the upload endpoint, while the server continues to validate and save `content` as text. If the chosen Django Vditor package does not support the project's Django version, isolate the Vditor JavaScript initialization in a project widget rather than coupling domain models to a package-specific model.
+Use a `ModelForm`/admin widget integration so the editor is present wherever the post authoring form is used. The widget initializes Vditor with Markdown mode and the upload endpoint, while the server continues to validate and save `content` as text. `django-vditor` 1.1.3 cannot be used because its published distribution imports a missing module; use a local project widget with Vditor's official frontend assets instead of coupling domain models to a package-specific model.
 
 ### Configuration follows Django conventions
 
@@ -47,7 +47,7 @@ Add `MEDIA_URL`, `MEDIA_ROOT`, and storage settings with environment-aware defau
 
 ## Risks / Trade-offs
 
-- [The selected Vditor Django package is incompatible with Django 6.1] -> Verify compatibility before adding the dependency; use a small local widget integration with Vditor assets if necessary.
+- [The selected Vditor Django package is incompatible with Django 6.1] -> `django-vditor` 1.1.3 imports a missing module; use a small local widget integration with Vditor assets.
 - [Untrusted Markdown renders unsafe HTML or links] -> Keep Markdown canonical but sanitize/secure it at rendering boundaries; do not mark editor output safe by default.
 - [Uploads consume excessive storage or bypass type checks] -> Enforce a configurable byte limit, allow only JPEG/JPG and WebP MIME types, use server-generated paths, and test invalid content.
 - [An upload is never referenced by a saved post] -> Attachments deliberately have no post relation; retain ownership metadata and document cleanup as a future policy rather than inferring references from Markdown.
