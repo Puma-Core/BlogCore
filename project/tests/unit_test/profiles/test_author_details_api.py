@@ -24,10 +24,12 @@ def test_public_profile_serializer_exposes_only_public_author_fields() -> None:
         "short_description",
         "photo_url",
         "fullname",
+        "social_networks",
     }
     assert serialized["public_username"] == "test-user"
     assert serialized["photo_url"] == "https://example.test/photo.jpg"
     assert serialized["fullname"] == "Test User"
+    assert serialized["social_networks"] == []
 
 
 def test_public_profile_view_returns_author_details(mocker) -> None:

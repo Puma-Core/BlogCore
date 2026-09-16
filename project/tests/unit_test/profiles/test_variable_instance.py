@@ -33,6 +33,12 @@ def test_clean_rejects_value_not_matching_regex_for_new_instance() -> None:
     assert "value" in exc_info.value.message_dict
 
 
+def test_value_validation_skips_a_variable_instance_without_variable() -> None:
+    instance = VariableInstance(value="invalid value")
+
+    instance._ensure_value_matches_regex()
+
+
 def test_clean_rejects_modification_of_archived_instance(mocker) -> None:
     mock_objects = mocker.patch.object(VariableInstance, "objects")
     mock_objects.filter.return_value.values_list.return_value.first.return_value = True
@@ -181,14 +187,14 @@ def test_delete_protects_a_persisted_archived_instance() -> None:
     assert exc_info.value.protected_objects == {instance}
 
 
-def test_delete_calls_super_when_not_archived(mocker) -> None:
-    mock_super_delete = mocker.patch.object(django_models.Model, "delete")
-    instance = _build_variable_instance()
+def test_delete_protects_an_active_persisted_instance() -> None:
+    instance = _build_variable_instance(pk=1)
     instance.archived = False
 
-    instance.delete()
+    with pytest.raises(django_models.ProtectedError) as exc_info:
+        instance.delete()
 
-    mock_super_delete.assert_called_once()
+    assert exc_info.value.protected_objects == {instance}
 
 
 def test_str_returns_variable_and_value() -> None:
