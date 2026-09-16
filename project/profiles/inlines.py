@@ -1,3 +1,5 @@
+from typing import cast
+
 from django import forms
 from django.contrib.admin import TabularInline
 from profiles.models import (
@@ -45,10 +47,14 @@ class VariableInstanceForm(forms.ModelForm):
             social_network_instance is not None
             and social_network_instance.config_id
         ):
-            getattr(self.fields, "variable").queryset = (
+            variable_field = cast(
+                forms.ModelChoiceField,
+                self.fields["variable"],
+            )
+            variable_field.queryset = (
                 social_network_instance.config.variables.all()
             )
-            widget = getattr(self.fields, "variable").widget
+            widget = variable_field.widget
             widget.attrs["style"] = "pointer-events: none;"
             widget.attrs["tabindex"] = "-1"
             widget.can_add_related = False
@@ -61,7 +67,13 @@ class VariableInstanceForm(forms.ModelForm):
         if initial_variable is None:
             return self.cleaned_data["variable"]
         initial_variable_id = getattr(initial_variable, "pk", initial_variable)
-        return getattr(self.fields, "variable").queryset.get(pk=initial_variable_id)
+        variable_field = cast(
+            forms.ModelChoiceField,
+            self.fields["variable"],
+        )
+        if variable_field.queryset is None:
+            return self.cleaned_data["variable"]
+        return variable_field.queryset.get(pk=initial_variable_id)
 
 
 class PublicProfileSocialNetworkInline(TabularInline):
