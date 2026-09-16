@@ -42,6 +42,7 @@ class Variable(models.Model):
 
 
 class SocialNetworkConfig(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=64, unique=True)
     template_url = models.CharField(max_length=255)
     icon_url = models.CharField(max_length=255)
@@ -156,7 +157,7 @@ class SocialNetworkInstance(models.Model):
         return super().delete(*args, **kwargs)
 
     def _ensure_variable_instances_match_config(self) -> None:
-        if not getattr(self, "config_id"):
+        if not self.pk or not getattr(self, "config_id"):
             return
         config_variable_identifiers = {
             variable.identifier for variable in self.config._associated_variables()
@@ -245,14 +246,12 @@ class VariableInstance(models.Model):
         self.save(update_fields=["archived"])
 
     def delete(self, *args: Any, **kwargs: Any) -> tuple[int, dict[str, int]]:
-        if self.archived:
-            protected_objects: set[models.Model] = set()
-            if self.pk is not None:
-                protected_objects.add(self)
-            raise models.ProtectedError(
-                "Archived variable instances cannot be deleted.", protected_objects
-            )
-        return super().delete(*args, **kwargs)
+        protected_objects: set[models.Model] = set()
+        if self.pk is not None:
+            protected_objects.add(self)
+        raise models.ProtectedError(
+            "Variable instances cannot be deleted.", protected_objects
+        )
 
     def _ensure_not_archived(self) -> None:
         if not self.pk:
@@ -289,6 +288,8 @@ class VariableInstance(models.Model):
             )
 
     def _ensure_value_matches_regex(self) -> None:
+        if not self.variable_id:
+            return
         if not self.variable.matches(self.value):
             raise ValidationError(
                 {"value": "Value does not match the variable regex."}
@@ -336,5 +337,62 @@ class PublicProfile(models.Model):
                 {"user": "The user of a public profile cannot change."}
             )
 
+    @property
+    def social_networks(self) -> models.QuerySet["SocialNetworkInstance"]:
+        return SocialNetworkInstance.objects.filter(
+            public_profile_links__public_profile=self,
+            archived=False,
+        )
+
     def __str__(self: "PublicProfile") -> str:
         return self.public_username
+
+
+class PublicProfileSocialNetwork(models.Model):
+    public_profile = models.ForeignKey(
+        PublicProfile,
+        on_delete=models.CASCADE,
+        related_name="social_network_links",
+    )
+    social_network_instance = models.ForeignKey(
+        SocialNetworkInstance,
+        on_delete=models.PROTECT,
+        related_name="public_profile_links",
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=("public_profile", "social_network_instance"),
+                name="unique_public_profile_social_network",
+            )
+        ]
+
+    def clean(self) -> None:
+        super().clean()
+        if (
+            getattr(self, "public_profile_id", None)
+            and getattr(self, "social_network_instance_id", None)
+        ):
+            if self.public_profile.user_id != self.social_network_instance.author_id:
+                raise ValidationError(
+                    {
+                        "social_network_instance": (
+                            "The social network instance must belong to the "
+                            "public profile user."
+                        )
+                    }
+                )
+            if self.social_network_instance.archived:
+                raise ValidationError(
+                    {
+                        "social_network_instance": (
+                            "Archived social network instances cannot be "
+                            "added to a public profile."
+                        )
+                    }
+                )
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        self.clean()
+        super().save(*args, **kwargs)

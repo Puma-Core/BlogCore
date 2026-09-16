@@ -1,10 +1,17 @@
+from profiles.admin.variable_instance import VariableInstanceAdmin
+from profiles.admin.social_netowk_instance import SocialNetworkInstanceAdmin
+from profiles.admin.public_profile import PublicProfileAdmin
 from typing import Any
 from django import forms
 from django.contrib import admin
 
 from profiles.models import SocialNetworkConfig, Variable, _extract_placeholders
-from . import public_profile  # noqa: E402,F401  # registers PublicProfileAdmin
 
+__all__ = (
+    PublicProfileAdmin,
+    SocialNetworkInstanceAdmin,
+    VariableInstanceAdmin
+)
 
 @admin.register(Variable)
 class VariableAdmin(admin.ModelAdmin):
@@ -16,7 +23,7 @@ class VariableAdmin(admin.ModelAdmin):
 class SocialNetworkConfigForm(forms.ModelForm):
     class Meta:
         model = SocialNetworkConfig
-        fields = ("name", "template_url", "icon_url", "variables")
+        fields = ("name", "template_url", "icon_url", "variables", "archived")
 
     def clean(self) -> dict:
         cleaned_data: dict[str, Any] = super().clean() or {}
@@ -41,7 +48,7 @@ class SocialNetworkConfigForm(forms.ModelForm):
 @admin.register(SocialNetworkConfig)
 class SocialNetworkConfigAdmin(admin.ModelAdmin):
     form = SocialNetworkConfigForm
-    list_display = ("name", "template_url", "icon_url")
+    list_display = ("name", "template_url", "icon_url", )
     search_fields = ("name",)
     ordering = ("name",)
     filter_horizontal = ("variables",)
