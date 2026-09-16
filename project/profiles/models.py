@@ -288,7 +288,7 @@ class VariableInstance(models.Model):
             )
 
     def _ensure_value_matches_regex(self) -> None:
-        if not self.variable_id:
+        if not getattr(self, "variable_id"):
             return
         if not self.variable.matches(self.value):
             raise ValidationError(

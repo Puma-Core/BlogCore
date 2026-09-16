@@ -45,10 +45,10 @@ class VariableInstanceForm(forms.ModelForm):
             social_network_instance is not None
             and social_network_instance.config_id
         ):
-            self.fields["variable"].queryset = (
+            getattr(self.fields, "variable").queryset = (
                 social_network_instance.config.variables.all()
             )
-            widget = self.fields["variable"].widget
+            widget = getattr(self.fields, "variable").widget
             widget.attrs["style"] = "pointer-events: none;"
             widget.attrs["tabindex"] = "-1"
             widget.can_add_related = False
@@ -61,7 +61,7 @@ class VariableInstanceForm(forms.ModelForm):
         if initial_variable is None:
             return self.cleaned_data["variable"]
         initial_variable_id = getattr(initial_variable, "pk", initial_variable)
-        return self.fields["variable"].queryset.get(pk=initial_variable_id)
+        return getattr(self.fields, "variable").queryset.get(pk=initial_variable_id)
 
 
 class PublicProfileSocialNetworkInline(TabularInline):
