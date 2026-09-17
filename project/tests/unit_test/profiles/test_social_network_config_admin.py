@@ -115,6 +115,28 @@ def test_form_accepts_template_with_associated_variable() -> None:
     assert result["template_url"] == "https://example.test/{username}"
 
 
+@pytest.mark.django_db
+def test_form_validates_new_config_before_it_has_an_id() -> None:
+    from profiles.models import Variable
+
+    variable = Variable.objects.create(
+        identifier="username",
+        label="Username",
+        description="Account username",
+        regex=r"\w+",
+    )
+    form = SocialNetworkConfigForm(
+        data={
+            "name": "GitHub",
+            "template_url": "https://example.test/{username}",
+            "icon_url": "https://example.test/icon.svg",
+            "variables": [variable.pk],
+        }
+    )
+
+    assert form.is_valid()
+
+
 def test_form_accepts_template_without_placeholders() -> None:
     form = SocialNetworkConfigForm()
     form.cleaned_data = {

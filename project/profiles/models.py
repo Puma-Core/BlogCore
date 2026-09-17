@@ -62,6 +62,8 @@ class SocialNetworkConfig(models.Model):
         self._validate_template_url_variables()
 
     def _validate_template_url_variables(self) -> None:
+        if self.pk is None:
+            return
         placeholders = set(self._template_placeholders())
         if not placeholders:
             return
