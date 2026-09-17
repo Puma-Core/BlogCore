@@ -2,7 +2,8 @@ import pytest
 from django import forms as django_forms
 from django.contrib import admin
 
-from profiles.admin import SocialNetworkConfigAdmin, SocialNetworkConfigForm
+from profiles.admin import SocialNetworkConfigAdmin
+from profiles.forms.social_network_config import SocialNetworkConfigForm
 from profiles.models import SocialNetworkConfig
 
 from tests.unit_test.functions._request import _request

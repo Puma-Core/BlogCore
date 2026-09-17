@@ -1,4 +1,4 @@
-from profiles.inlines import PublicProfileSocialNetworkInline
+from profiles.inlines.public_profile_social_network import PublicProfileSocialNetworkInline
 from django import forms
 from django.contrib import admin
 from django.http import HttpRequest

@@ -3,12 +3,11 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory
 
-from profiles.inlines import VariableInstanceForm
-from profiles.inlines import (
-    PublicProfileSocialNetworkInline,
-    VariableInstanceInline,
-    _missing_config_variables,
-)
+from profiles.forms.variable_instance import VariableInstanceForm
+from profiles.inlines.public_profile_social_network import PublicProfileSocialNetworkInline
+from profiles.inlines.variable_instance import VariableInstanceInline
+from profiles.utils import missing_config_variables
+
 from profiles.models import (
     PublicProfile,
     SocialNetworkConfig,
@@ -115,12 +114,40 @@ def test_variable_instance_inline_preserves_disabled_variables_on_post() -> None
     assert form_without_initial.is_valid()
     assert form_without_initial.cleaned_data["variable"] == variable
 
+@pytest.mark.django_db
+def test_variable_instance_inline_with_empty_queryset_on_post() -> None:
+    user = get_user_model().objects.create_user(username="octocat")
+    variable = Variable.objects.create(
+        identifier="username",
+        label="Username",
+        description="Social network username",
+        regex=r"[A-Za-z0-9_]+",
+    )
+    config = SocialNetworkConfig.objects.create(
+        name="GitHub",
+        template_url="https://github.com/{username}",
+        icon_url="https://example.test/github.svg",
+    )
+    network = SocialNetworkInstance.objects.create(author=user, config=config)
+    form = VariableInstanceForm(
+        data={"variable": str(variable.pk), "value": "octocat"},
+        initial={"variable": variable.pk},
+        instance=VariableInstance(social_network_instance=network),
+        social_network_instance=network,
+    )
+
+    form.cleaned_data = {"variable": variable}
+
+    assert list(form.fields["variable"].queryset) == []
+    assert form.clean_variable() == variable
+
+
 
 def test_variable_instance_inline_has_no_rows_without_a_network_instance() -> None:
     request = RequestFactory().get("/")
     inline = VariableInstanceInline(SocialNetworkInstance, admin.site)
 
-    assert _missing_config_variables(None) == []
+    assert missing_config_variables(None) == []
     assert inline.get_extra(request) == 0
     assert inline.get_max_num(request) == 0
 

@@ -1,5 +1,5 @@
+from profiles.inlines.variable_instance import VariableInstanceInline
 from profiles.forms.social_network_instance import SocialNetworkInstanceForm
-from profiles.inlines import VariableInstanceInline
 from django.contrib import admin
 
 from profiles.models import SocialNetworkInstance
