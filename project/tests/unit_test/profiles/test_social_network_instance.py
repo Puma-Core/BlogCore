@@ -257,6 +257,15 @@ def test_instance_clean_skips_config_check_when_config_id_is_none() -> None:
     parent._iter_variable_instances.assert_not_called()
 
 
+def test_instance_clean_skips_variable_instances_when_unsaved(mocker) -> None:
+    parent = _build_parent(pk=None)
+    parent._iter_variable_instances = mocker.Mock()  # type: ignore[method-assign]
+
+    parent.clean()
+
+    parent._iter_variable_instances.assert_not_called()
+
+
 def test_load_state_returns_none_when_pk_is_none() -> None:
     parent = _build_parent(pk=None)
 

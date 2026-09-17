@@ -1,3 +1,4 @@
+from profiles.inlines import PublicProfileSocialNetworkInline
 from django import forms
 from django.contrib import admin
 from django.http import HttpRequest
@@ -33,6 +34,7 @@ class PublicProfileAdmin(admin.ModelAdmin):
     form = PublicProfileForm
     add_form_template = "admin/profiles/publicprofile/change_form.html"
     change_form_template = "admin/profiles/publicprofile/change_form.html"
+    inlines = [PublicProfileSocialNetworkInline,]
 
     def get_form(
         self,

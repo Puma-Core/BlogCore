@@ -5,7 +5,7 @@ Ofrecer una identidad pública configurable para cada usuario a través de un mo
 ## Requirements
 
 ### Requirement: Perfil público identificado por nombre de usuario público
-El sistema SHALL mantener un perfil público por usuario que incluya un `public_username` único, nombre, apellido, título, subtítulo, especialidad, descripción corta, `photo_url` opcional y redes sociales instanciadas. Cuando se proporcione, `photo_url` MUST ser una URL válida de una imagen externa. El `public_username` SHALL identificar al perfil y la información guardada SHALL estar disponible para consulta desde el modelo.
+El sistema SHALL mantener un perfil público por usuario que incluya un `public_username` único, nombre, apellido, título, subtítulo, especialidad, descripción corta, `photo_url` opcional y las instancias de redes sociales activas seleccionadas por su propietario. Cuando se proporcione, `photo_url` MUST ser una URL válida de una imagen externa. El `public_username` SHALL identificar al perfil y la información guardada SHALL estar disponible para consulta desde el modelo.
 
 #### Scenario: Se persiste un perfil configurado
 - **WHEN** se crea o actualiza un perfil con `public_username` válido y campos públicos
