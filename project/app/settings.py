@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 import os
 from pathlib import Path
 
-from app.storage import validate_s3_media_storage
+from app.storage import S3_MEDIA_STORAGE_BACKEND, validate_s3_media_storage
 
 
 def get_env_list(name: str, default: tuple[str, ...]) -> list[str]:
@@ -206,7 +206,7 @@ validate_s3_media_storage(MEDIA_STORAGE_BACKEND, AWS_STORAGE_BUCKET_NAME)
 POST_ATTACHMENT_MAX_SIZE = get_env_int("POST_ATTACHMENT_MAX_SIZE", 5 * 1024 * 1024)
 POST_ATTACHMENT_ALLOWED_MIME_TYPES = ("image/jpeg", "image/webp")
 
-STORAGES = {
+STORAGES: dict[str, dict] = {
     "default": {
         "BACKEND": MEDIA_STORAGE_BACKEND,
     },
@@ -214,6 +214,23 @@ STORAGES = {
         'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     },
 }
+
+if MEDIA_STORAGE_BACKEND == S3_MEDIA_STORAGE_BACKEND:
+    STORAGES["default"]["OPTIONS"] = {
+        "access_key": AWS_ACCESS_KEY_ID,
+        "secret_key": AWS_SECRET_ACCESS_KEY,
+        "bucket_name": AWS_STORAGE_BUCKET_NAME,
+        "endpoint_url": AWS_S3_ENDPOINT_URL,
+        "region_name": AWS_S3_REGION_NAME,
+        "addressing_style": AWS_S3_ADDRESSING_STYLE,
+        "custom_domain": get_optional_env_value(
+            "AWS_S3_CUSTOM_DOMAIN"
+        ),
+        "querystring_auth": get_env_bool(
+            "AWS_QUERYSTRING_AUTH",
+            False,
+        ),
+    }
 
 LOGGING = {
     "version": 1,

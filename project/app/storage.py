@@ -1,7 +1,7 @@
 from django.core.exceptions import ImproperlyConfigured
 
 
-S3_MEDIA_STORAGE_BACKEND = "storages.backends.s3boto3.S3Boto3Storage"
+S3_MEDIA_STORAGE_BACKEND = "storages.backends.s3.S3Storage"
 
 
 def validate_s3_media_storage(backend: str, bucket_name: str | None) -> None:
