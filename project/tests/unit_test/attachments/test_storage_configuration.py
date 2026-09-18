@@ -28,20 +28,22 @@ def test_s3_storage_is_selected_without_connecting_to_a_remote_service(mocker) -
     storage_settings = {
         "default": {
             "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "access_key": "access-key",
+                "secret_key": "secret-key",
+                "bucket_name": "blog-media",
+                "endpoint_url": "https://objects.example.test",
+                "region_name": "us-east-1",
+                "custom_domain": "media.example.test",
+                "querystring_auth": False,
+            },
         },
         "staticfiles": settings.STORAGES["staticfiles"],
     }
     mock_save = mocker.patch.object(S3Storage, "_save", return_value="attachments/image.jpg")
     mock_delete = mocker.patch.object(S3Storage, "delete")
 
-    with override_settings(
-        STORAGES=storage_settings,
-        AWS_STORAGE_BUCKET_NAME="blog-media",
-        AWS_S3_REGION_NAME="us-east-1",
-        AWS_S3_ENDPOINT_URL="https://objects.example.test",
-        AWS_ACCESS_KEY_ID="access-key",
-        AWS_SECRET_ACCESS_KEY="secret-key",
-    ):
+    with override_settings(STORAGES=storage_settings):
         storage = storages["default"]
         attachment = Attachment()
         attachment.file.save("image.jpg", ContentFile(b"image"), save=False)
@@ -50,5 +52,8 @@ def test_s3_storage_is_selected_without_connecting_to_a_remote_service(mocker) -
     assert isinstance(storage, S3Storage)
     assert storage.bucket_name == "blog-media"
     assert storage.endpoint_url == "https://objects.example.test"
+    assert storage.custom_domain == "media.example.test"
+    assert storage.querystring_auth is False
+    assert storage.url("attachments/image.jpg") == "https://media.example.test/attachments/image.jpg"
     mock_save.assert_called_once()
     mock_delete.assert_called_once_with("attachments/image.jpg")

@@ -1,9 +1,12 @@
 import json
+from urllib.parse import urlsplit
 
 import pytest
+from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from django.urls import resolve, reverse
+from storages.backends.s3 import S3Storage
 
 from attachments.models import Attachment
 from attachments.views import AttachmentDetailView, AttachmentUploadView
@@ -14,6 +17,24 @@ pytestmark = pytest.mark.usefixtures("local_attachment_storage")
 
 def image_file(name="image.jpg", content_type="image/jpeg", content=b"image"):
     return SimpleUploadedFile(name, content, content_type=content_type)
+
+
+def public_remote_storage_settings():
+    return {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "access_key": "access-key",
+                "secret_key": "secret-key",
+                "bucket_name": "blog-media",
+                "endpoint_url": "https://objects.example.test",
+                "region_name": "us-east-1",
+                "custom_domain": "media.example.test",
+                "querystring_auth": False,
+            },
+        },
+        "staticfiles": settings.STORAGES["staticfiles"],
+    }
 
 
 @pytest.mark.django_db
@@ -65,6 +86,21 @@ def test_upload_stores_supported_images_and_returns_vditor_response(
     assert attachment.owner == persisted_user
     assert attachment.metadata == {"relationship": {"posts": [1]}}
     assert (tmp_path / attachment.file.name).is_file()
+
+
+@pytest.mark.django_db
+def test_upload_returns_an_unsigned_custom_domain_url(api_client, persisted_user, mocker) -> None:
+    api_client.force_authenticate(persisted_user)
+    mocker.patch.object(S3Storage, "exists", return_value=False)
+    mocker.patch.object(S3Storage, "_save", side_effect=lambda name, content: name)
+
+    with override_settings(STORAGES=public_remote_storage_settings()):
+        response = api_client.post(reverse("attachment-upload"), {"file": image_file()})
+
+    url = response.data["data"]["url"]
+    assert response.status_code == 201
+    assert url.startswith("https://media.example.test/attachments/")
+    assert urlsplit(url).query == ""
 
 
 @pytest.mark.django_db
@@ -261,6 +297,25 @@ def test_owner_can_retrieve_an_attachment(api_client, persisted_user, tmp_path) 
         "size": 5,
         "metadata": {"relationship": {"posts": [1]}},
     }
+
+
+@pytest.mark.django_db
+def test_attachment_detail_returns_an_unsigned_custom_domain_url(api_client, persisted_user) -> None:
+    attachment = Attachment.objects.create(
+        file="attachments/image.jpg",
+        original_name="image.jpg",
+        mime_type="image/jpeg",
+        size=5,
+        owner=persisted_user,
+    )
+    api_client.force_authenticate(persisted_user)
+
+    with override_settings(STORAGES=public_remote_storage_settings()):
+        response = api_client.get(reverse("attachment-detail", kwargs={"pk": attachment.pk}))
+
+    assert response.status_code == 200
+    assert response.data["url"] == "https://media.example.test/attachments/image.jpg"
+    assert urlsplit(response.data["url"]).query == ""
 
 
 @pytest.mark.django_db
