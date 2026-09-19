@@ -1,7 +1,7 @@
-![Logo - BlogCore](https://public-bucket.pumacore.com/blogcore/public/logo.png)
 # BlogCore
-Centraliza tu blog en una plataforma.
-Este proyecto esta destinado a generar difusión de perfiles, dando la posibilidad de redactar publicaciones/noticias y posteriormente publicar en diferentes plataformas de forma manual o asistido por inteligencia artificial.
+Es un CMS + Blogging con la capacidad de potenciar tu exposición desde una plataforma única.
+El Proyecto esta destinado a generar difusión de perfiles, dando la posibilidad de redactar publicaciones/noticias y posteriormente publicar en diferentes plataformas de forma manual o asistido por inteligencia artificial.
+Permitir saber la cantidad de visitas que tiene, realizar publicaciones, vincular sus redes sociales, generar imágenes, auto publicar contenido, generar encuestas, entre muchas funcionalidades que le permita a usted como generador de contenido acceder a métricas de su publico.
 
 ## Actualidad
 El proyecto se limita únicamente a dar difusión a la cuenta [/fveronelli](/authors/fveronelli).
@@ -16,5 +16,6 @@ Para: fveronelli@pumacore.com
 Asunto: Colaboración y participación en BlogCore.
 Contenido:
 Hola soy [Tu nombre y apellido] estoy especializado en [las tecnologías/habilidades que tengas].
-[Redacta un tu interes en el proyecto y porque te gustaría contribuir, no mas de 256 caracteres ;)]
+[Redacta un tu interés en el proyecto y porque te gustaría contribuir, no mas de 256 caracteres ;)]
+Saludos
 ```
