@@ -1,0 +1,8 @@
+{
+  "python.analysis.ignore": [
+    "project/tests"
+  ],
+  "python.languageServer": "Pylance",
+  "python.analysis.typeCheckingMode": "off",
+  "ty.disableLanguageServices": true
+}
