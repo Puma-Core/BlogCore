@@ -13,9 +13,8 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 import os
 from pathlib import Path
 
-from app.storage import S3_MEDIA_STORAGE_BACKEND, validate_s3_media_storage
-
 from app.settings.database import DATABASES as DATABASES
+from app.storage import S3_MEDIA_STORAGE_BACKEND, validate_s3_media_storage
 
 
 def get_env_list(name: str, default: tuple[str, ...]) -> list[str]:
