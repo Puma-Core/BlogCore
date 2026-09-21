@@ -2,6 +2,10 @@ import importlib
 
 import pytest
 from app.settings import database
+from app.settings.errors import (
+    MissingDatabaseVariableError,
+    UnsupportedDatabaseEngineError,
+)
 
 
 def test_database_settings_default_to_sqlite(monkeypatch):
@@ -45,23 +49,17 @@ def test_postgresql_configuration_does_not_fallback_to_sqlite(monkeypatch):
     monkeypatch.setenv("DATABASE_HOST", "database.example.test")
 
     with pytest.raises(
-        RuntimeError,
+        MissingDatabaseVariableError,
         match="DATABASE_NAME must be set when DATABASE_ENGINE=postgresql",
-    ) as error:
+    ):
         importlib.reload(database)
-
-    assert error.value.__class__.__name__ == "DatabaseConfigurationError"
-    assert error.value.__class__.__module__ == database.__name__
 
 
 def test_invalid_database_engine_raises_custom_configuration_error(monkeypatch):
     monkeypatch.setenv("DATABASE_ENGINE", "mysql")
 
     with pytest.raises(
-        RuntimeError,
+        UnsupportedDatabaseEngineError,
         match="DATABASE_ENGINE must be either 'sqlite' or 'postgresql'",
-    ) as error:
+    ):
         importlib.reload(database)
-
-    assert error.value.__class__.__name__ == "DatabaseConfigurationError"
-    assert error.value.__class__.__module__ == database.__name__
