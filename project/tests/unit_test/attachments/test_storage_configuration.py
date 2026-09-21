@@ -1,3 +1,7 @@
+import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 from django.conf import settings
@@ -57,3 +61,47 @@ def test_s3_storage_is_selected_without_connecting_to_a_remote_service(mocker) -
     assert storage.url("attachments/image.jpg") == "https://media.example.test/attachments/image.jpg"
     mock_save.assert_called_once()
     mock_delete.assert_called_once_with("attachments/image.jpg")
+
+
+def test_s3_settings_build_default_storage_options_from_environment() -> None:
+    project_root = Path(__file__).parents[4]
+    environment = {
+        **os.environ,
+        "DJANGO_SETTINGS_MODULE": "app.settings",
+        "MEDIA_STORAGE_BACKEND": "storages.backends.s3.S3Storage",
+        "AWS_STORAGE_BUCKET_NAME": "blog-media",
+        "AWS_ACCESS_KEY_ID": "access-key",
+        "AWS_SECRET_ACCESS_KEY": "secret-key",
+        "AWS_S3_ENDPOINT_URL": "https://objects.example.test",
+        "AWS_S3_REGION_NAME": "us-east-1",
+        "AWS_S3_ADDRESSING_STYLE": "path",
+        "AWS_S3_CUSTOM_DOMAIN": "media.example.test",
+        "AWS_QUERYSTRING_AUTH": "false",
+        "PYTHONPATH": str(project_root / "project"),
+    }
+    command = (
+        "import django; django.setup(); "
+        "from django.conf import settings; "
+        "import json; "
+        "print(json.dumps(settings.STORAGES['default']['OPTIONS'], sort_keys=True))"
+    )
+
+    result = subprocess.run(
+        [sys.executable, "-c", command],
+        cwd=project_root,
+        env=environment,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert json.loads(result.stdout) == {
+        "access_key": "access-key",
+        "addressing_style": "path",
+        "bucket_name": "blog-media",
+        "custom_domain": "media.example.test",
+        "endpoint_url": "https://objects.example.test",
+        "querystring_auth": False,
+        "region_name": "us-east-1",
+        "secret_key": "secret-key",
+    }
