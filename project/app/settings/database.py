@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from .errors import MissingDatabaseVariableError, UnsupportedDatabaseEngineError
+from app.settings.errors import MissingDatabaseVariableError, UnsupportedDatabaseEngineError
 
 DATABASE_ENGINE = os.getenv("DATABASE_ENGINE", "sqlite").lower()
 BASE_DIR = Path(__file__).resolve().parents[2]
