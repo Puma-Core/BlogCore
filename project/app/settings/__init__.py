@@ -15,7 +15,7 @@ from pathlib import Path
 
 from app.storage import S3_MEDIA_STORAGE_BACKEND, validate_s3_media_storage
 
-from .database import DATABASES as DATABASES
+from app.settings.database import DATABASES as DATABASES
 
 
 def get_env_list(name: str, default: tuple[str, ...]) -> list[str]:
