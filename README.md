@@ -63,6 +63,25 @@ políticas de red del host.
 | `ALLOWED_HOSTS` | `localhost,127.0.0.1` | Hosts permitidos, separados por comas. |
 | `API_BASE_URL` | `http://localhost:8000` | URL base expuesta en el esquema OpenAPI. |
 | `DJANGO_PORT` | `8000` | Puerto donde Django escucha y que Docker publica en el host. |
+| `DATABASE_ENGINE` | `sqlite` | Backend de Django. Usa `postgresql` para conectar una instancia externa. |
+| `DATABASE_NAME` | sin valor | Nombre de la base PostgreSQL externa. Obligatorio con `DATABASE_ENGINE=postgresql`. |
+| `DATABASE_USER` | sin valor | Usuario PostgreSQL externo. Obligatorio con `DATABASE_ENGINE=postgresql`. |
+| `DATABASE_PASSWORD` | sin valor | Contraseña PostgreSQL externa. Obligatoria con `DATABASE_ENGINE=postgresql`. |
+| `DATABASE_HOST` | sin valor | Host PostgreSQL externo. Obligatorio con `DATABASE_ENGINE=postgresql`. |
+| `DATABASE_PORT` | `5432` | Puerto PostgreSQL externo. |
+
+SQLite continúa siendo el backend predeterminado cuando `DATABASE_ENGINE` no está definido.
+Para usar PostgreSQL, configura todas las variables requeridas en `.env` y asegúrate de que
+la instancia externa sea accesible desde el host o el contenedor Django. Compose no crea,
+almacena ni administra un servidor PostgreSQL.
+
+Si `DATABASE_ENGINE=postgresql` y falta una variable obligatoria, Django falla durante la
+carga de settings con un error visible; nunca cambia silenciosamente a SQLite. El arranque
+reintenta las migraciones cuando la instancia externa todavía no acepta conexiones.
+
+La configuración de base de datos está centralizada en `project/app/settings/database.py`.
+Este cambio solo aplica las migraciones Django al backend seleccionado; no incluye exportación
+ni importación de datos entre SQLite y PostgreSQL.
 
 Para detener el servicio, usa `docker compose down`. Para eliminar también el entorno
 virtual interno, usa `docker compose down --volumes`.

@@ -15,6 +15,8 @@ from pathlib import Path
 
 from app.storage import S3_MEDIA_STORAGE_BACKEND, validate_s3_media_storage
 
+from .database import DATABASES as DATABASES
+
 
 def get_env_list(name: str, default: tuple[str, ...]) -> list[str]:
     value = os.getenv(name)
@@ -39,7 +41,7 @@ def get_env_int(name: str, default: int) -> int:
     return int(get_env_value(name, str(default)))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -140,17 +142,6 @@ TEMPLATES = [
 CSRF_TRUSTED_ORIGINS = get_env_list("CSRF_TRUSTED_ORIGINS", ("http://localhost",))
 
 WSGI_APPLICATION = 'app.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/6.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 
 # Password validation
