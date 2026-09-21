@@ -47,5 +47,21 @@ def test_postgresql_configuration_does_not_fallback_to_sqlite(monkeypatch):
     with pytest.raises(
         RuntimeError,
         match="DATABASE_NAME must be set when DATABASE_ENGINE=postgresql",
-    ):
+    ) as error:
         importlib.reload(database)
+
+    assert error.value.__class__.__name__ == "DatabaseConfigurationError"
+    assert error.value.__class__.__module__ == database.__name__
+
+
+def test_invalid_database_engine_raises_custom_configuration_error(monkeypatch):
+    monkeypatch.setenv("DATABASE_ENGINE", "mysql")
+
+    with pytest.raises(
+        RuntimeError,
+        match="DATABASE_ENGINE must be either 'sqlite' or 'postgresql'",
+    ) as error:
+        importlib.reload(database)
+
+    assert error.value.__class__.__name__ == "DatabaseConfigurationError"
+    assert error.value.__class__.__module__ == database.__name__

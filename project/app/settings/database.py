@@ -1,16 +1,32 @@
 import os
 from pathlib import Path
+from typing import Self
 
 DATABASE_ENGINE = os.getenv("DATABASE_ENGINE", "sqlite").lower()
 BASE_DIR = Path(__file__).resolve().parents[2]
 
 
+class DatabaseConfigurationError(RuntimeError):
+    MISSING_VARIABLE_MESSAGE = (
+        "{name} must be set when DATABASE_ENGINE=postgresql"
+    )
+    INVALID_ENGINE_MESSAGE = (
+        "DATABASE_ENGINE must be either 'sqlite' or 'postgresql'"
+    )
+
+    @classmethod
+    def missing_variable(cls, name: str) -> Self:
+        return cls(cls.MISSING_VARIABLE_MESSAGE.format(name=name))
+
+    @classmethod
+    def invalid_engine(cls) -> Self:
+        return cls(cls.INVALID_ENGINE_MESSAGE)
+
+
 def _required_postgresql_value(name: str) -> str:
     value = os.getenv(name)
     if not value:
-        raise RuntimeError(
-            f"{name} must be set when DATABASE_ENGINE=postgresql"
-        )
+        raise DatabaseConfigurationError.missing_variable(name)
     return value
 
 
@@ -33,6 +49,4 @@ elif DATABASE_ENGINE in {"postgres", "postgresql"}:
         }
     }
 else:
-    raise RuntimeError(
-        "DATABASE_ENGINE must be either 'sqlite' or 'postgresql'"
-    )
+    raise DatabaseConfigurationError.invalid_engine()
