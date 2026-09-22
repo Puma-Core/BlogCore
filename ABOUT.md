@@ -21,7 +21,7 @@ De esta manera, BlogCore busca ayudar a construir una presencia digital más só
 ## Roadmap
 
 Actualmente, el proyecto se encuentra disponible públicamente con el objetivo de experimentar con sus funcionalidades, generar difusión y permitir que cualquier persona interesada pueda conocer su evolución.
-
+![BlogCore Roadmap](https://public-bucket.pumacore.com/blogcore/public/file_000000008ee8820e92def2bdb87f599b.png)
 A futuro, BlogCore evolucionará hacia un sistema privado en el que determinadas funcionalidades estarán disponibles únicamente para usuarios autorizados.
 
 ### Lanzamiento de la versión beta
