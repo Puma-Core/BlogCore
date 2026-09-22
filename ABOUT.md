@@ -58,4 +58,4 @@ contribuir al proyecto. Máximo 256 caracteres 😉]
 
 Saludos.
 ```
-> Redactado por [Facundo Veronelli](https://blogcore.pumacore.com/authors/fveronelli)
+> Redactado por [Facundo Veronelli](https://blogcore.pumacore.com/authors/fveronelli) + ChatGPT
