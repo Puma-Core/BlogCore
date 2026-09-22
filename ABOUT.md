@@ -1,6 +1,7 @@
 # BlogCore
 
 **BlogCore** es un **BMS (Blog Management System)** diseñado para centralizar la creación, gestión y distribución de contenido en múltiples plataformas y redes sociales desde un único lugar.
+[Bienvenido/a](https://bucket.pumacore.com/attachments/faa2eac2-5859-454b-a6db-06659d5514d6.jpg)
 
 ## Sobre el proyecto
 
