@@ -1,9 +1,48 @@
 [project]
 name = "my-blog"
 version = "0.1.0"
-description = "Add your description here"
+description = "Personal experiment blog built with Django - a platform for trying out features and publishing what I discover"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "boto3>=1.43.95",
     "django>=6.1",
+    "django-storages[s3]>=1.14.6",
+    "djangorestframework>=3.18.0",
+    "gunicorn>=26.2.0",
+    "psycopg[binary]>=3.2.0",
+    "requests>=2.34.2",
+    "ruff>=0.16.6",
+    "whitenoise>=6.11.0",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "pytest-mock>=3.15.1",
+    "pyright>=1.1.411",
+    "pytest-django>=4.14.0",
+    "drf-spectacular>=0.30.0",
+    "django-stubs>=6.1.0",
+    "ty>=0.0.80",
+]
+develop = [
+    "pylance>=10.0.0",
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["project"]
+addopts = "--import-mode=importlib"
+DJANGO_SETTINGS_MODULE = "app.settings"
+testpaths = ["project/tests"]
+
+[tool.coverage.run]
+omit = [
+    "project/tests/*",
+    "**/migrations/**"
+]
+
+[tool.coverage.report]
+fail_under=99

@@ -6,8 +6,25 @@ dist/
 wheels/
 *.egg-info
 
+# Agent Config
+.agents/
+
 # Virtual environments
 .venv
 
+# Django local database
+db.sqlite3
+project/staticfiles/
+
 # SKILLS
 .opencode/skills
+
+.codegraph/
+
+.coverage
+
+# Enviroment variables
+.env
+
+# Media
+media/
