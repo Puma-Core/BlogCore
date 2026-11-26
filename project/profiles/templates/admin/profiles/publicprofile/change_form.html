@@ -1,0 +1,16 @@
+{% extends "admin/change_form.html" %}
+{% load i18n static %}
+
+{# Hide navigation that would let a profileless user leave onboarding. #}
+{% block nav-breadcrumbs %}{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+{% block sidebar %}{% endblock %}
+
+{# Keep the top header but only show logout (and the theme toggle). #}
+{% block userlinks %}
+  <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+    {% csrf_token %}
+    <button type="submit">{% translate 'Log out' %}</button>
+  </form>
+  {% include "admin/color_theme_toggle.html" %}
+{% endblock %}

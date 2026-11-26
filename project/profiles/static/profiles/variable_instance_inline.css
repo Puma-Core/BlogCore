@@ -1,0 +1,4 @@
+#variable_instances-group .delete,
+#variable_instances-group .inline-deletelink {
+    display: none !important;
+}

@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "git-commit": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/git-commit/SKILL.md",
+      "computedHash": "2607fc60629b82b257136dd2a7a373f0a4466c0b49df7746d845d59313c99b21"
+    },
+    "git-pull-request-creator": {
+      "source": "Veronelli/git-pull-request-creator",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "002c90f164d6a79505f730ea580c3ea7b7f325d52d5ddd63e33cddec8e9fa62a"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+<div class="readonly-value">
+    <{{ widget.display_tag }} class="form-control-static">{{ widget.value|default:"" }}</{{ widget.display_tag }}>
+    <input type="hidden" name="{{ widget.name }}" value="{{ widget.value|default:"" }}">
+    {% if widget.copy_button %}
+    <button class="copy-text" type="button" onclick="copyToClipboard(this)" data-clipboard-text="{{ widget.value|default:"" }}">Copy</button>
+    {% endif %}
+</div>
+
+{% if widget.copy_button %}
+<script>
+  function copyToClipboard(button) {
+    const textToCopy = button.getAttribute('data-clipboard-text');
+
+    let buttonText = document.querySelector('.copy-text');
+
+    navigator.clipboard.writeText(textToCopy).then(function() {
+        buttonText.textContent = 'Copied!';
+        setTimeout(function() {
+            buttonText.textContent = "Copy";
+        }, 2000);
+    }, function(err) {
+      console.error('Could not copy text: ', err);
+    });
+  }
+</script>
+{% endif %}
