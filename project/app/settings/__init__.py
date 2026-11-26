@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'drf_spectacular',
     'posts',
@@ -111,6 +112,7 @@ SPECTACULAR_SETTINGS = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -252,6 +254,8 @@ MAILERS = {
 LOG_TRACKING_SERVICE_CLASS = os.getenv("LOG_TRACKING_SERVICE_CLASS")
 LOG_TRACKING_LOKI_BASE_URL = os.getenv("LOG_TRACKING_LOKI_BASE_URL")
 LOG_TRACKING_LOKI_TOKEN = os.getenv("LOG_TRACKING_LOKI_TOKEN")
+
+CORS_ALLOWED_ORIGINS = get_env_list("CORS_ALLOWED_ORIGINS", [])
 
 from profiles.constants import ONBOARDING_GROUP_NAME
 
